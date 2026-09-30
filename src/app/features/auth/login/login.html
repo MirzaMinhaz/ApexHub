@@ -1,0 +1,70 @@
+<div class="login-container">
+
+  <h1>Welcome to ApexHub</h1>
+
+  <p>Login to your account</p>
+
+  <form
+    [formGroup]="loginForm"
+    (ngSubmit)="onLogin()">
+
+    <div>
+
+      <label>Username</label>
+
+      <input
+        type="text"
+        formControlName="username"
+        placeholder="Enter username"
+      />
+
+      @if (
+        loginForm.get('username')?.touched &&
+        loginForm.get('username')?.hasError('required')
+      ) {
+        <small>Username is required.</small>
+      }
+
+    </div>
+
+
+    <div>
+
+      <label>Password</label>
+
+      <input
+        type="password"
+        formControlName="password"
+        placeholder="Enter password"
+      />
+
+      @if (
+        loginForm.get('password')?.touched &&
+        loginForm.get('password')?.hasError('required')
+      ) {
+        <small>Password is required.</small>
+      }
+
+    </div>
+
+
+    <button
+      type="submit"
+      [disabled]="loginForm.invalid">
+
+      Login
+
+    </button>
+
+  </form>
+
+
+  <p>
+    Don't have an account?
+
+    <a routerLink="/register">
+      Create Account
+    </a>
+  </p>
+
+</div>

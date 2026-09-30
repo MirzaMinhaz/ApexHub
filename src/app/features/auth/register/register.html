@@ -1,0 +1,157 @@
+<div class="register-container">
+
+  <h1>Create Account</h1>
+
+  <p>Register for ApexHub</p>
+
+  <form
+    [formGroup]="registerForm"
+    (ngSubmit)="onRegister()">
+
+    <!-- Username -->
+    <div>
+      <label>Username</label>
+
+      <input
+        type="text"
+        formControlName="username"
+        placeholder="Enter username"
+      />
+
+      @if (
+        registerForm.get('username')?.touched &&
+        registerForm.get('username')?.hasError('required')
+      ) {
+        <small>Username is required.</small>
+      }
+    </div>
+
+
+    <!-- Email -->
+    <div>
+      <label>Email</label>
+
+      <input
+        type="email"
+        formControlName="email"
+        placeholder="Enter email"
+      />
+
+      @if (
+        registerForm.get('email')?.touched &&
+        registerForm.get('email')?.hasError('required')
+      ) {
+        <small>Email is required.</small>
+      }
+
+      @if (
+        registerForm.get('email')?.touched &&
+        registerForm.get('email')?.hasError('email')
+      ) {
+        <small>Enter a valid email.</small>
+      }
+    </div>
+
+
+    <!-- Mobile Number -->
+    <div>
+      <label>Mobile Number</label>
+
+      <input
+        type="text"
+        formControlName="mobileNumber"
+        placeholder="01XXXXXXXXX"
+      />
+
+      @if (
+        registerForm.get('mobileNumber')?.touched &&
+        registerForm.get('mobileNumber')?.hasError('required')
+      ) {
+        <small>Mobile number is required.</small>
+      }
+    </div>
+
+
+    <!-- Password -->
+    <div>
+      <label>Password</label>
+
+      <input
+        type="password"
+        formControlName="password"
+        placeholder="Enter password"
+      />
+
+      @if (
+        registerForm.get('password')?.touched &&
+        registerForm.get('password')?.hasError('required')
+      ) {
+        <small>Password is required.</small>
+      }
+    </div>
+
+
+    <!-- Confirm Password -->
+    <div>
+      <label>Confirm Password</label>
+
+      <input
+        type="password"
+        formControlName="confirmPassword"
+        placeholder="Confirm password"
+      />
+
+      @if (
+        registerForm.get('confirmPassword')?.touched &&
+        registerForm.get('confirmPassword')?.hasError('required')
+      ) {
+        <small>Confirm Password is required.</small>
+      }
+
+      @if (
+        registerForm.touched &&
+        registerForm.hasError('passwordMismatch')
+      ) {
+        <small>Passwords do not match.</small>
+      }
+    </div>
+
+
+    <!-- Success -->
+    @if (successMessage) {
+      <div class="success-message">
+        {{ successMessage }}
+      </div>
+    }
+
+
+    <!-- Error -->
+    @if (errorMessage) {
+      <div class="error-message">
+        {{ errorMessage }}
+      </div>
+    }
+
+
+    <!-- Register Button -->
+    <button
+      type="submit"
+      [disabled]="isLoading">
+
+      @if (isLoading) {
+        Registering...
+      } @else {
+        Register
+      }
+
+    </button>
+
+  </form>
+
+
+  <p>
+    Already have an account?
+    <a routerLink="/login">Login</a>
+  </p>
+
+</div>
