@@ -1,40 +1,97 @@
 <div class="otp-container">
-  <div class="otp-card">
 
-    <h2>Verify OTP</h2>
-    <p>Enter the OTP sent to your registered contact.</p>
+  <h1>Verify OTP</h1>
 
-    <form [formGroup]="otpForm" (ngSubmit)="onVerifyOtp()">
+  <p>
+    Enter the OTP sent to your registered mobile number.
+  </p>
 
-      <div class="form-group">
-        <label for="otp">OTP</label>
-
-        <input type="text" id="otp" maxlength="6" formControlName="otp" placeholder="Enter 6-digit OTP" />
-
-        @if (otpForm.get('otp')?.touched &&
-        otpForm.get('otp')?.hasError('required')) {
-        <small>OTP is required.</small>
-        }
-
-        @if (otpForm.get('otp')?.touched &&
-        otpForm.get('otp')?.hasError('minlength')) {
-        <small>OTP must be 6 digits.</small>
-        }
-
-      </div>
-
-      <button type="submit">
-        Verify OTP
-      </button>
-
-    </form>
-
-    <p class="resend-text">
-      Didn't receive the OTP?
-      <button type="button" (click)="onResendOtp()">
-        Resend OTP
-      </button>
+  @if (username) {
+    <p>
+      Username:
+      <strong>{{ username }}</strong>
     </p>
+  }
 
-  </div>
+  @if (mobileNumber) {
+    <p>
+      Mobile:
+      <strong>{{ mobileNumber }}</strong>
+    </p>
+  }
+
+  <form
+    [formGroup]="otpForm"
+    (ngSubmit)="onVerifyOtp()"
+  >
+
+    <label for="otp">
+      OTP
+    </label>
+
+    <input
+      id="otp"
+      type="text"
+      maxlength="6"
+      inputmode="numeric"
+      autocomplete="one-time-code"
+      formControlName="otp"
+      placeholder="Enter 6-digit OTP"
+    />
+
+    @if (
+      otpForm.get('otp')?.touched &&
+      otpForm.get('otp')?.hasError('required')
+    ) {
+      <p>OTP is required.</p>
+    }
+
+    @if (
+      otpForm.get('otp')?.touched &&
+      otpForm.get('otp')?.hasError('pattern')
+    ) {
+      <p>OTP must be exactly 6 digits.</p>
+    }
+
+    <button
+      type="submit"
+      [disabled]="isLoading"
+    >
+
+      @if (isLoading) {
+        Verifying...
+      } @else {
+        Verify OTP
+      }
+
+    </button>
+
+  </form>
+
+  @if (errorMessage) {
+    <p>
+      {{ errorMessage }}
+    </p>
+  }
+
+  @if (successMessage) {
+    <p>
+      {{ successMessage }}
+    </p>
+  }
+
+  <button
+    type="button"
+    (click)="onResendOtp()"
+    [disabled]="isResending"
+  >
+
+    @if (isResending) {
+      Sending...
+    } @else {
+      Didn't receive the OTP? Resend OTP
+    }
+
+  </button>
+
 </div>

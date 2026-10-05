@@ -1,4 +1,5 @@
 export interface VerifyOtpRequest {
-  username: string;
+  userId: number;
   otp: string;
+  purpose: string;
 }

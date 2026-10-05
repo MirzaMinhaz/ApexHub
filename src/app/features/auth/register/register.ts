@@ -3,9 +3,9 @@ import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
-  Validators
+  Validators,
 } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 import { RegisterRequest } from '../../../core/models/register-request';
 import { Auth } from '../../../core/services/auth';
@@ -15,123 +15,160 @@ import { Auth } from '../../../core/services/auth';
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    RouterLink
+    RouterLink,
   ],
   templateUrl: './register.html',
-  styleUrl: './register.css'
+  styleUrl: './register.css',
 })
 export class Register {
 
   registerForm: FormGroup;
+
   isLoading = false;
+
   errorMessage = '';
+
   successMessage = '';
 
   constructor(
     private fb: FormBuilder,
-    private authService: Auth
+    private authService: Auth,
+    private router: Router,
   ) {
+
     this.registerForm = this.fb.group(
       {
-        username: ['', Validators.required],
+        username: [
+          '',
+          Validators.required,
+        ],
 
         email: [
           '',
           [
             Validators.required,
-            Validators.email
-          ]
+            Validators.email,
+          ],
         ],
 
         mobileNumber: [
           '',
-          Validators.required
+          Validators.required,
         ],
 
         password: [
           '',
-          Validators.required
+          Validators.required,
         ],
 
         confirmPassword: [
           '',
-          Validators.required
-        ]
+          Validators.required,
+        ],
       },
       {
-        validators: this.passwordMatchValidator
-      }
+        validators: this.passwordMatchValidator,
+      },
     );
   }
 
-  passwordMatchValidator(form: FormGroup) {
+  passwordMatchValidator(
+    form: FormGroup,
+  ) {
 
-    const password = form.get('password')?.value;
-    const confirmPassword = form.get('confirmPassword')?.value;
+    const password =
+      form.get('password')?.value;
+
+    const confirmPassword =
+      form.get('confirmPassword')?.value;
 
     if (password === confirmPassword) {
       return null;
     }
 
     return {
-      passwordMismatch: true
+      passwordMismatch: true,
     };
   }
 
   onRegister(): void {
 
-    console.log('REGISTER BUTTON CLICKED');
-
-    this.successMessage = '';
+    // Clear previous messages
     this.errorMessage = '';
+    this.successMessage = '';
 
+    // Validate form
     if (this.registerForm.invalid) {
-
-      console.log(
-        'FORM INVALID',
-        this.registerForm.value,
-        this.registerForm.errors
-      );
 
       this.registerForm.markAllAsTouched();
 
       return;
     }
 
-    const request: RegisterRequest = {
-      username: this.registerForm.value.username,
-      email: this.registerForm.value.email,
-      mobileNumber: this.registerForm.value.mobileNumber,
-      password: this.registerForm.value.password,
-      confirmPassword: this.registerForm.value.confirmPassword
-    };
-
-    console.log('Sending Register Request:', request);
-
+    // Start loading
     this.isLoading = true;
 
+    // Prepare request
+    const request: RegisterRequest = {
+
+      username:
+        this.registerForm.value.username,
+
+      email:
+        this.registerForm.value.email,
+
+      mobileNumber:
+        this.registerForm.value.mobileNumber,
+
+      password:
+        this.registerForm.value.password,
+
+      confirmPassword:
+        this.registerForm.value.confirmPassword,
+    };
+
+    // Call registration API
     this.authService.register(request).subscribe({
 
       next: (response) => {
 
         console.log(
           'Registration successful:',
-          response
+          response,
         );
 
         this.isLoading = false;
 
         this.successMessage =
-          response?.message ?? 'Registration successful!';
+          'Registration successful. OTP sent to your mobile number.';
 
-        this.registerForm.reset();
+        // Store OTP verification information
+        sessionStorage.setItem(
+          'otpUserId',
+          response.userId.toString(),
+        );
+
+        sessionStorage.setItem(
+          'otpUsername',
+          response.username,
+        );
+
+        sessionStorage.setItem(
+          'otpMobileNumber',
+          response.mobileNumber,
+        );
+
+        // Navigate to OTP verification page
+        this.router.navigate([
+          '/verify-otp',
+        ]);
       },
 
       error: (error) => {
 
         console.error(
           'Registration failed:',
-          error
+          error,
         );
 
         this.isLoading = false;
@@ -139,8 +176,7 @@ export class Register {
         this.errorMessage =
           error?.error?.message ??
           'Registration failed. Please try again.';
-      }
-
+      },
     });
   }
 }
